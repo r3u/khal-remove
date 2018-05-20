@@ -16,7 +16,6 @@ The following software packages are required to run the khal-remove virtual mach
 ## Appendix
 ### Useful sox commands
 
-sox infile outfile reverse
-
-sox hunter.mp3 hunter-L.wav remix 1
-sox hunter.mp3 hunter-R.wav remix 2
+* ```sox infile outfile reverse```
+* ``` sox hunter.mp3 hunter-L.wav remix 1```
+* ``` sox hunter.mp3 hunter-R.wav remix 2```
