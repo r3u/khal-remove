@@ -10,7 +10,7 @@ The following software packages are required to run the khal-remove virtual mach
 * In a terminal window, cd to the khal-remove project root and run ```vagrant up```.
 * To have the project files automatically synced with the VM (convenient when developing), run ```vagrant rsync-auto``` in the project root (preferably from a separate terminal window).
 * SSH to the VM by running ```vagrant ssh```.
-* In the VM, run ```cd /workspace/webapp```, then ```./run``` to start the web server.
+* In the VM, run ```cd /workspace/app```, then ```./run``` to start the web server.
 * Head to http://192.168.50.42:8000 to use the application.
 
 ## Appendix

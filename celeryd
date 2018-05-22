@@ -1,7 +1,7 @@
 ENABLED="true"
 
 CELERYD_NODES="w1"
-CELERYD_CHDIR="/workspace/webapp"
+CELERYD_CHDIR="/workspace/app"
 CELERYD_OPTS="--time-limit=300 --concurrency=8"
 CELERY_CONFIG_MODULE="celeryconfig"
 CELERYD_LOG_FILE="/var/log/celery/%n.log"

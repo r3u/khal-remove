@@ -1,9 +1,10 @@
-from flask import Flask, flash, request, redirect, url_for, send_file
+from flask import Flask, flash, request, redirect, url_for, send_file, abort
 from werkzeug.utils import secure_filename
 from logger import logger
 import os.path
 
 import logging
+import tasks
 
 
 UPLOAD_FOLDER = '/var/lib/khal-remove/uploads'
@@ -29,6 +30,24 @@ def upload():
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return ""
+
+@app.route('/job', methods=['GET'])
+def create_job():
+    res = tasks.test.delay()
+    return res.id
+
+@app.route('/job/<jobid>', methods=['GET'])
+def get_job_status(jobid):
+    return tasks.state(jobid)
+
+@app.route('/result/<jobid>', methods=['GET'])
+def get_result(jobid):
+    res = tasks.get(jobid)
+    if res:
+        return res
+    else:
+        return abort(404)
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=9999, debug=True)
