@@ -4,10 +4,9 @@ import sys
 import time
 
 @celery.task
-def test():
-    # XXX mock sleep
-    time.sleep(30)
-    return "Dummy result"
+def process(filename):
+    time.sleep(30) # XXX: replace this
+    return "Dummy result for {0}".format(filename)
 
 def state(id):
     # Note: res is 'PENDING' for jobs that don't exist

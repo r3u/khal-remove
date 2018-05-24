@@ -28,12 +28,9 @@ def upload():
         flash('No selected file')
         return redirect(request.url)
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    return ""
-
-@app.route('/job', methods=['GET'])
-def create_job():
-    res = tasks.test.delay()
+    abs_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(abs_path)
+    res = tasks.process.delay(abs_path)
     return res.id
 
 @app.route('/job/<jobid>', methods=['GET'])
