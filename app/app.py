@@ -51,11 +51,13 @@ def upload():
     abs_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(abs_path)
     res = tasks.process.delay(abs_path)
-    return res.id
+    return jsonify({
+        "jobId": res.id
+    })
 
 @app.route('/job/<jobid>', methods=['GET'])
 def get_job_status(jobid):
-    return tasks.state(jobid)
+    return jsonify(tasks.state(jobid))
 
 @app.route('/result/<jobid>', methods=['GET'])
 def get_result(jobid):

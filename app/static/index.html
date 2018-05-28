@@ -26,13 +26,25 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         <link rel="stylesheet" type="text/css" href="style.css" />
     </head>
     <body>
-        <h1>Oh hello!</h1>
+        <h1>KHAL | REMOVE | 2.0</h1>
 
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" />
-            <input type="submit" value="Upload" />
+        <form id="upload-form" enctype="multipart/form-data">
+            <input id="fileinput" name="file" type="file" />
         </form>
 
+        <h3>Upload progress</h3>
+        <progress id="upload-progress" value="0"></progress>
+
+        <!-- TODO: Replace with illustrated visual score -->
+        <h3>Processing progress</h3>
+        <progress id="processing-progress" value="0"></progress>
+
+        <h3>Download</h3>
+        <div id="downloads-section">
+            <p>Pending</p>
+        </div>
+
+        <script src="lib/jquery-3.3.1.min.js"></script>
         <script src="khal-remove.js"></script>
     </body>
 </html>
