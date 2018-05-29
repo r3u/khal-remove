@@ -4,9 +4,6 @@ set -eu
 
 export DEBIAN_FRONTEND=noninteractive
 
-sudo mkdir -p /var/lib/khal-remove/{uploads,results}
-sudo chown -R vagrant:vagrant /var/lib/khal-remove
-
 sudo apt-get -y update
 sudo apt-get -y upgrade
 sudo apt-get -y install vim
@@ -24,6 +21,13 @@ sudo apt-get -y install python3-sqlalchemy
 
 sudo pip3 install sox
 
-sudo cp /workspace/celeryd /etc/default/celeryd
+sudo groupadd khal-service
+sudo usermod -a -G khal-service celery
+sudo usermod -a -G khal-service vagrant
+sudo mkdir -p /var/lib/khal-remove/{uploads,results}
+sudo chown -R vagrant:khal-service /var/lib/khal-remove
+sudo chmod g+w /var/lib/khal-remove/results
+
+sudo cp /workspace/config/celeryd /etc/default/celeryd
 
 sudo systemctl restart celeryd

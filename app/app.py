@@ -17,15 +17,18 @@
 
 from flask import Flask, flash, request, redirect
 from flask import url_for, send_file, abort, jsonify
+from flask import send_from_directory
 from werkzeug.utils import secure_filename
 from logger import logger
 import os.path
-
+import uuid
 import logging
 import tasks
 
 
 UPLOAD_FOLDER = '/var/lib/khal-remove/uploads'
+RESULTS_FOLDER = '/var/lib/khal-remove/results'
+
 app = Flask(__name__, static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -47,10 +50,12 @@ def upload():
         return jsonify({
             "error": "Missing file"
         }), 400
-    filename = secure_filename(file.filename)
-    abs_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(abs_path)
-    res = tasks.process.delay(abs_path)
+    file_ext = os.path.splitext(file.filename)[1]
+    filename = "rhal-remove-{0}{1}".format(str(uuid.uuid4()), file_ext)
+    abs_input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(abs_input_path)
+    res = tasks.process.delay(app.config['UPLOAD_FOLDER'],
+                              RESULTS_FOLDER, filename)
     return jsonify({
         "jobId": res.id
     })
@@ -66,6 +71,10 @@ def get_result(jobid):
         return res
     else:
         return abort(404)
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    return send_from_directory(RESULTS_FOLDER, filename, as_attachment=True)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,22 @@
+/*
+ * KHAL | REMOVE | 2.0
+ * Copyright (C) 2018  Rachael Melanson
+ * Copyright (C) 2018  Henry Rodrick
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 $('#fileinput').on('change', function(e) {
     if($(e.target).val() === '') {
         console.log("Missing file")
@@ -28,6 +47,10 @@ $('#fileinput').on('change', function(e) {
             return xhr;
         },
         success: function(data) {
+			 $('#upload-progress').attr({
+				 value: 100.0,
+				 max: 100.0
+			 });
             var jobId = data.jobId
             var url = "/job/" + jobId;
             function fetchStatus() {
@@ -37,7 +60,8 @@ $('#fileinput').on('change', function(e) {
                     success: function(data) {
                         var progress = 0.0;
                         if (data.state === "PROCESSING") {
-                            progress = data.progress
+                            progress = data.progress;
+							$('#processing-info').html(data.info);
                         } else if (data.state === "SUCCESS") {
                             progress = 100.0;
                         }
@@ -48,9 +72,12 @@ $('#fileinput').on('change', function(e) {
 
                         if (data.state === "SUCCESS") {
                             var url = "/result/" + jobId;
-                            $('#downloads-section').html(
-                                '<a href="' + url + '">Click me!</a>'
-                            );
+							$.get(url, function(filename) {
+								$('#downloads-section').html(
+									'<a href="download/' + filename + '">Click me!</a>'
+								);
+								$('#processing-info').html('Finished');
+							});
                         } else {
                             setTimeout(fetchStatus, 1000)
                         }

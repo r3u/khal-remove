@@ -18,18 +18,18 @@
 import celery
 from celery.result import AsyncResult
 import sys
-import time
 from logger import logger
+import processor
 
 @celery.task(bind=True)
-def process(self, filename):
+def process(self, in_path, out_path, filename):
     logger = self.get_logger()
-    for n in range(10):
-        progress = n / 10.0 * 100.0
-        logger.info("Progress {0}".format(progress))
-        self.update_state(state='PROGRESS', meta={'progress': progress})
-        time.sleep(1)
-    return "Dummy result for {0}".format(filename)
+    for info, progress in processor.process(in_path, out_path, filename):
+        self.update_state(state='PROGRESS', meta={
+            'info': info,
+            'progress': progress
+        })
+    return filename
 
 def state(id):
     # Note: res is 'PENDING' for jobs that don't exist
@@ -37,7 +37,8 @@ def state(id):
     if res.state == 'PROGRESS':
         return {
             "state": "PROCESSING",
-            "progress": res.info['progress']
+            "progress": res.info['progress'],
+            "info": res.info['info']
         }
     else:
         return {
