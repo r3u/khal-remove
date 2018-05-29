@@ -73,9 +73,7 @@ $('#fileinput').on('change', function(e) {
                         if (data.state === "SUCCESS") {
                             var url = "/result/" + jobId;
 							$.get(url, function(filename) {
-								$('#downloads-section').html(
-									'<a href="download/' + filename + '">Click me!</a>'
-								);
+                                window.location.href = "download/" + filename;
 								$('#processing-info').html('Finished');
 							});
                         } else {

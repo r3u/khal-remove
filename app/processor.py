@@ -32,3 +32,8 @@ def process(in_path, out_path, filename):
     copyfile(os.path.join(in_path, filename),
              os.path.join(out_path, filename))
     yield "Finished", 100.0
+
+
+# Standalone mode
+if __name__ == '__main__':
+    pass

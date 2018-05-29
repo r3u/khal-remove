@@ -51,7 +51,8 @@ def upload():
             "error": "Missing file"
         }), 400
     file_ext = os.path.splitext(file.filename)[1]
-    filename = "rhal-remove-{0}{1}".format(str(uuid.uuid4()), file_ext)
+    file_uuid = str(uuid.uuid4()).replace('-', '')
+    filename = "khal-remove-{0}{1}".format(file_uuid, file_ext)
     abs_input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(abs_input_path)
     res = tasks.process.delay(app.config['UPLOAD_FOLDER'],
