@@ -1,0 +1,9 @@
+[Unit]
+Description=khal-remove
+
+[Service]
+WorkingDirectory=/workspace/app
+ExecStart=/workspace/app/run
+
+[Install]
+WantedBy=multi-user.target
