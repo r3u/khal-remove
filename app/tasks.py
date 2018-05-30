@@ -17,19 +17,21 @@
 
 import celery
 from celery.result import AsyncResult
-import sys
-from logger import logger
+import os.path
+
 import processor
+from logger import logger
 
 @celery.task(bind=True)
-def process(self, in_path, out_path, filename):
+def process(self, in_file, work_dir, out_dir, out_filename):
     logger = self.get_logger()
-    for info, progress in processor.process(in_path, out_path, filename):
+    out_file = os.path.join(out_dir, out_filename)
+    for info, progress in processor.process(in_file, work_dir, out_file):
         self.update_state(state='PROGRESS', meta={
             'info': info,
             'progress': progress
         })
-    return filename
+    return out_filename
 
 def state(id):
     # Note: res is 'PENDING' for jobs that don't exist

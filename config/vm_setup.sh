@@ -24,7 +24,7 @@ sudo pip3 install sox
 sudo groupadd khal-service
 sudo usermod -a -G khal-service celery
 sudo usermod -a -G khal-service vagrant
-sudo mkdir -p /var/lib/khal-remove/{uploads,results}
+sudo mkdir -p /var/lib/khal-remove/{uploads,results,temp}
 sudo chown -R vagrant:khal-service /var/lib/khal-remove
 sudo chmod g+w /var/lib/khal-remove/results
 

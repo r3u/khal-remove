@@ -28,6 +28,7 @@ import tasks
 
 UPLOAD_FOLDER = '/var/lib/khal-remove/uploads'
 RESULTS_FOLDER = '/var/lib/khal-remove/results'
+WORK_DIR = '/var/lib/khal-remove/temp'
 
 app = Flask(__name__, static_url_path='')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -52,11 +53,12 @@ def upload():
         }), 400
     file_ext = os.path.splitext(file.filename)[1]
     file_uuid = str(uuid.uuid4()).replace('-', '')
-    filename = "khal-remove-{0}{1}".format(file_uuid, file_ext)
-    abs_input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    filename = "khal-remove-{0}".format(file_uuid)
+    abs_input_path = os.path.join(app.config['UPLOAD_FOLDER'],
+                                  filename + file_ext)
     file.save(abs_input_path)
-    res = tasks.process.delay(app.config['UPLOAD_FOLDER'],
-                              RESULTS_FOLDER, filename)
+    res = tasks.process.delay(abs_input_path, WORK_DIR,
+                              RESULTS_FOLDER, filename + ".wav")
     return jsonify({
         "jobId": res.id
     })

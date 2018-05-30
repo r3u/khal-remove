@@ -17,23 +17,48 @@
 
 import sox
 import time
+import argparse
+import tempfile
 from shutil import copyfile
 import os.path
 
-def process(in_path, out_path, filename):
-    yield "Step 1", 0.0
-    time.sleep(2)
-    yield "Step 2", 25.0
-    time.sleep(2)
-    yield "Step 3", 50.0
-    time.sleep(2)
-    yield "Step 4", 75.0
-    time.sleep(2)
-    copyfile(os.path.join(in_path, filename),
-             os.path.join(out_path, filename))
+def process(in_file, work_dir, out_file):
+    tmp_prefix = work_dir + os.path.sep
+
+    with tempfile.TemporaryDirectory(prefix=tmp_prefix) as tmpdir:
+        yield "Bitcrushing", 0.0
+        tmp_file_1 = os.path.join(tmpdir, "tmp1.wav")
+        tfm = sox.Transformer()
+        tfm.gain(gain_db=-6.0, normalize=True)
+        tfm.convert(bitdepth=8)
+        tfm.build(in_file, tmp_file_1)
+        tmp_file_2 = os.path.join(tmpdir, "tmp2.wav")
+        tfm = sox.Transformer()
+        tfm.gain(gain_db=-6.0, normalize=True)
+        tfm.convert(bitdepth=16)
+        tfm.build(tmp_file_1, tmp_file_2)
+
+        yield "Reversing", 33.3
+        tmp_file_3 = os.path.join(tmpdir, "tmp3.wav")
+        tfm = sox.Transformer()
+        tfm.reverse()
+        tfm.build(tmp_file_2, tmp_file_3)
+
+        yield "Normalizing", 66.6
+        tfm = sox.Transformer()
+        tfm.gain(gain_db=-1.0, normalize=True)
+        tfm.build(tmp_file_3, out_file)
     yield "Finished", 100.0
 
 
 # Standalone mode
 if __name__ == '__main__':
-    pass
+    parser = argparse.ArgumentParser()
+    parser.add_argument('in_file', help="File to process")
+    parser.add_argument('out_file', help="Name of output file")
+    parser.add_argument('--work_dir', help="Work directory (default: /tmp)")
+    a = parser.parse_args()
+    work_dir = a.work_dir if a.work_dir else "/tmp"
+    for info, prgs in process(a.in_file, work_dir, a.out_file):
+        print("Info={0}, Progress={1}".format(info, prgs))
+

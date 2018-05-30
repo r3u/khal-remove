@@ -51,38 +51,45 @@ $('#fileinput').on('change', function(e) {
 				 value: 100.0,
 				 max: 100.0
 			 });
-            var jobId = data.jobId
-            var url = "/job/" + jobId;
-            function fetchStatus() {
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(data) {
-                        var progress = 0.0;
-                        if (data.state === "PROCESSING") {
-                            progress = data.progress;
-							$('#processing-info').html(data.info);
-                        } else if (data.state === "SUCCESS") {
-                            progress = 100.0;
-                        }
-                        $('#processing-progress').attr({
-                            value: progress,
-                            max: 100.0
-                        });
-
-                        if (data.state === "SUCCESS") {
-                            var url = "/result/" + jobId;
-							$.get(url, function(filename) {
-                                window.location.href = "download/" + filename;
-								$('#processing-info').html('Finished');
-							});
-                        } else {
-                            setTimeout(fetchStatus, 1000)
-                        }
-                    }
-                })
-            }
-            fetchStatus()
+            pollStatus(data.jobId)
         }
     });
 });
+
+function pollStatus(jobId) {
+	var url = "/job/" + jobId;
+
+	function loop() {
+		$.ajax({
+			url: url,
+			type: 'GET',
+			success: function(data) {
+				var progress = 0.0;
+				if (data.state === "PROCESSING") {
+					progress = data.progress;
+					$('#processing-info').html(data.info);
+				} else if (data.state === "SUCCESS") {
+					progress = 100.0;
+				}
+				$('#processing-progress').attr({
+					value: progress,
+					max: 100.0
+				});
+
+				if (data.state === "SUCCESS") {
+					var url = "/result/" + jobId;
+					$.get(url, function(filename) {
+						window.location.href = "download/" + filename;
+						$('#processing-info').html('Finished');
+					});
+				} else if (data.state === "FAILURE") {
+					$('#processing-info').html('Failure');
+				} else {
+					setTimeout(loop, 1000)
+				}
+			}
+		})
+	}
+
+	loop();
+}
