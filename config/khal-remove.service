@@ -1,7 +1,9 @@
 [Unit]
 Description=khal-remove
+After=network-online.target
 
 [Service]
+Type=simple
 WorkingDirectory=/workspace/app
 ExecStart=/workspace/app/run
 

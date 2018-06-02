@@ -12,6 +12,7 @@ sudo apt-get -y install celeryd
 sudo apt-get -y install gunicorn3
 sudo apt-get -y install ipython3
 sudo apt-get -y install sox
+sudo apt-get -y install libsox-fmt-all
 sudo apt-get -y install python3-pip
 sudo apt-get -y install python3-flask
 sudo apt-get -y install python3-psycopg2
@@ -27,7 +28,13 @@ sudo usermod -a -G khal-service vagrant
 sudo mkdir -p /var/lib/khal-remove/{uploads,results,temp}
 sudo chown -R vagrant:khal-service /var/lib/khal-remove
 sudo chmod g+w /var/lib/khal-remove/results
+sudo chmod g+wx /var/lib/khal-remove/temp
 
 sudo cp /workspace/config/celeryd /etc/default/celeryd
+sudo ln -s /workspace/config/khal-remove.service /lib/systemd/system/
+
+sudo systemctl daemon-reload
+sudo systemctl enable khal-remove
 
 sudo systemctl restart celeryd
+sudo systemctl restart khal-remove
